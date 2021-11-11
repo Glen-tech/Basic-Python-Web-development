@@ -48,3 +48,5 @@ def sign_up():
             flash("Account succesfully created", category = 'succes')
             
     return render_template("sign_up.html")
+
+
