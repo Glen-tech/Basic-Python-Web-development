@@ -13,7 +13,7 @@ class User(db.Model,UserMixin): #user database
 class Note(db.Model): # note database
     id = db.Column(db.Integer, primary_key = True)
     data = db.Column(db.String(10000))
-    date = db.Column(db.DateTime(timezone= True, server_default = func.now()))
+    date = db.Column(db.DateTime())
     user_id = db.Column(db.Integer, db.ForeignKey('user.id')) # link to user class
     notes = db.relationship('Note') # notes related to the user
     
