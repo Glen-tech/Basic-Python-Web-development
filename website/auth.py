@@ -1,4 +1,9 @@
-from flask import Blueprint, render_template,request,flash
+from flask import Blueprint, render_template,request,flash,redirect,url_for
+from .models import User
+from werkzeug.security import generate_password_hash,check_password_hash 
+from . import db
+
+
 #routes for or website
 
 auth = Blueprint('auth', __name__)
@@ -21,6 +26,16 @@ def login():
         password = request.form.get('password')
         print(email)
         print(password)
+        
+        user = User.query.filter_by(email=email).first()
+        
+        if user:
+            if check_password_hash(user.password, password):
+                flash('Logged in succesfully', category= 'succes')
+            else:
+                flash('Incorrect password, try again.', category= 'error')
+        else:
+            flash('Email does not exist',category='error')            
     return render_template("login.html")
     
         
@@ -36,7 +51,11 @@ def sign_up():
         print(password1)
         print(password2)
         
-        if(len(email) < 3):
+        user = User.query.filter_by(email=email).first()
+        
+        if user:
+            flash('Email already exists',category = 'error')
+        elif(len(email) < 3):
             flash("Email must be greater than 2 characters", category = 'error')
         elif(len(firstName) < 3):
             flash("First name must be greater than 2 characters", category = 'error')
@@ -45,7 +64,11 @@ def sign_up():
         elif(password1 != password2):
             flash("Passwords don\'t match, try again", category = 'error')
         else:
+            new_user = User(email=email, first_name = firstName, password = generate_password_hash(password = password1 , method = 'sha256'))
+            db.session.add(new_user)
+            db.session.commit()
             flash("Account succesfully created", category = 'succes')
+            return redirect(url_for('auth.home'))
             
     return render_template("sign_up.html")
 

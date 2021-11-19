@@ -1,6 +1,5 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy # for database useage
-from sqlalchemy_utils.functions import database_exists
 from os import path
 
 db = SQLAlchemy()
@@ -15,7 +14,7 @@ def create_app():
     
     app.register_blueprint(auth,  url_prefix='/') # / means no prefix
     
-    from .models import User,Note # file needs to be loaded before inilazing or creating database 
+    from .models import User # file needs to be loaded before inilazing or creating database 
 
     create_database(app)
      
@@ -23,7 +22,6 @@ def create_app():
     
 def create_database(app):
     if not path.exists('website/database.db'):
-        print('Creating database')
         db.create_all(app=app)
     else:
         print('Database exist')
