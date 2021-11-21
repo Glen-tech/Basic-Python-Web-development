@@ -23,63 +23,122 @@
 ******************************************************************************/
 #include <Wire.h>
 #include <math.h>
+#include <DHT.h>
 #include "SparkFunCCS811.h" //Click here to get the library: http://librarymanager/All#SparkFun_CCS811
 
 #define CCS811_ADDR 0x5B //Default I2C Address
-//#define CCS811_ADDR 0x5A //Alternate I2C Address
+#define LIGHT_PIN   36
+
+
+#define DHT_PIN 27     // Digital pin connected to the DHT sensor
+#define DHTTYPE    DHT11     // DHT 11
+
+
+enum STEPS{CSS811_SENSOR,DHT_11_SENSOR,GROOVE_LIGHT_SENSOR,SENDING_DATA};
+STEPS OneByOne;
+
+
+struct sensors_Reading
+{
+  int CO2;
+  int tVTOC;
+  float humi;
+  float temp;
+  int   light;
+}Values;
+
 
 CCS811 mySensor(CCS811_ADDR);
+DHT dht(DHT_PIN, DHTTYPE);
 
-int pinTemp = 36;
+void css811_sensor()
+{
+  if (mySensor.dataAvailable())
+  {
+    //If so, have the sensor read and calculate the results.
+    //Get them later
+    mySensor.readAlgorithmResults();
+    Values.CO2 = mySensor.getCO2();
+    Values.tVTOC = mySensor.getTVOC();
+  }
+}
+void DHT11_sensor()
+{
+    Values.humi = dht.readHumidity();
+    Values.temp = dht.readTemperature();
+}
+
+void groove_light_sensor()
+{
+    Values.light = analogRead(LIGHT_PIN); 
+}
+
+void sending_data()
+{
+  Serial.print("CO2: ");
+  Serial.print(Values.CO2);
+  Serial.print("tVOC: ");
+  Serial.println(Values.tVTOC);
+
+  Serial.print("Temperature: ");
+  Serial.print(Values.temp);
+  Serial.print("ºC ");
+  Serial.print("Humidity: ");
+  Serial.println(Values.humi);  
+
+  Serial.print("Light analoge read: ");
+  Serial.println(Values.light);
+}
 
 void setup()
 {
-  Serial.begin(115200);
-  Serial.println("CCS811 Basic Example");
+  Serial.begin(9600);
+  Serial.println("Reading sensor data and sending ESP32");
 
   Wire.begin(); //Inialize I2C Hardware
 
+  dht.begin();
+
   if (mySensor.begin() == false)
   {
-    Serial.print("CCS811 error. Please check wiring. Freezing...");
-    while (1)
-      ;
+    Serial.print("Problem sensors. Please check wiring. Freezing...");
+    while (1);
   }
 }
 
 void loop()
 {
   //Check to see if data is ready with .dataAvailable()
-  if (mySensor.dataAvailable())
-  {
-    int temp = analogRead(pinTemp);    //Read the analog pin
-    
-    double Temp;
-    Temp =log(10000.0/(1024.0/temp-1)); // for pull-up configuration
-    Temp = 1 / (0.001129148 + (0.000234125 + (0.0000000876741 * Temp * Temp ))* Temp );
-    Temp = Temp - 273.15;            // Convert Kelvin to Celcius*/
-  
-    
-    Serial.print("Temperature: ");
-    Serial.print(int(Temp));
-    Serial.println("C");  //print the temperature status
-    
-    //If so, have the sensor read and calculate the results.
-    //Get them later
-    mySensor.readAlgorithmResults();
 
-    Serial.print("CO2[");
-    //Returns calculated CO2 reading
-    Serial.print(mySensor.getCO2());
-    Serial.print("] tVOC[");
-    //Returns calculated TVOC reading
-    Serial.print(mySensor.getTVOC());
-    Serial.print("] millis[");
-    //Display the time since program start
-    Serial.print(millis());
-    Serial.print("]");
-    Serial.println();
+  
+  switch(OneByOne)
+  {
+    case CSS811_SENSOR: 
+    css811_sensor();
+    OneByOne=DHT_11_SENSOR;
+    break;
+
+
+    case DHT_11_SENSOR: 
+    DHT11_sensor();
+    OneByOne=GROOVE_LIGHT_SENSOR;
+    break;
+
+    case GROOVE_LIGHT_SENSOR: 
+    groove_light_sensor();
+    OneByOne= SENDING_DATA;
+    break;
+
+
+    case SENDING_DATA: 
+    sending_data();
+    OneByOne=CSS811_SENSOR;
+    break;
+
+    default: Serial.println("Something went wrong");
+    
+    
   }
 
-  delay(10); //Don't spam the I2C bus
+  delay(1000); 
 }
