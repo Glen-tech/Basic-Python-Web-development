@@ -65,11 +65,11 @@ DHT dht(DHT_PIN, DHTTYPE);
 WiFiClient client;
 HTTPClient http;
 
-const char* ssid = "Enter here";
-const char* password = "Enter here";
+const char* ssid = "telenet-9C35AF8";
+const char* password = "Fdarmbefcn48";
 
 //Your Domain name with URL path or IP address with path
-const char* serverName = "http://192.168.0.223:8000";
+const char* serverName = "http://192.168.0.223:5000/handleData";
 
 
 void css811_sensor()
@@ -116,26 +116,25 @@ void sending_data()
   sValues.stemp = String(Values.temp);
   sValues.slight= String(Values.light);
 
-
   StaticJsonDocument<300> doc;
 
   JsonArray data_CSS811 = 
-  doc.createNestedArray("CSS811 Sensor");
-  data_CSS811.add("Value CO2");
+  doc.createNestedArray("CSS811_sensor");
+  data_CSS811.add("Value_CO2");
   data_CSS811.add(sValues.sCO2);
-  data_CSS811.add("Value tVTOC");
+  data_CSS811.add("Value_tVTOC");
   data_CSS811.add(sValues.stVTOC);
 
   JsonArray data_DHT11 =
-  doc.createNestedArray("DHT11 Sensor");
-  data_DHT11.add("Value humidity");
+  doc.createNestedArray("DHT11_sensor");
+  data_DHT11.add("Value_humidity");
   data_DHT11.add(sValues.shumi);
-  data_DHT11.add("Value temperature");
+  data_DHT11.add("Value_temperature");
   data_DHT11.add(sValues.stemp);
 
   JsonArray data_Groove =
-  doc.createNestedArray("Groove light sensor");
-  data_Groove.add("Value light");
+  doc.createNestedArray("Groove_light_sensor");
+  data_Groove.add("Value_light");
   data_Groove.add(sValues.slight);
  
   // Your Domain name with URL path or IP address with path
@@ -144,8 +143,8 @@ void sending_data()
 
   String requestBody;
   serializeJson(doc, requestBody);
+
   int httpResponseCode = http.POST(requestBody);
- 
      
   Serial.print("HTTP Response code: ");
   Serial.println(httpResponseCode);

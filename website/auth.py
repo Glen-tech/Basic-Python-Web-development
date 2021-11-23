@@ -2,22 +2,24 @@ from flask import Blueprint, render_template,request,flash,redirect,url_for
 from .models import User
 from werkzeug.security import generate_password_hash,check_password_hash 
 from . import db
+from flask_login import login_user, login_required, logout_user, current_user
 
 
 #routes for or website
 
 auth = Blueprint('auth', __name__)
 
-#user is manditory, will crash if not
 
 @auth.route('/')
+@login_required
 def home():
-    return render_template("home.html") 
+    return render_template("home.html", user=current_user) 
     
-
 @auth.route('/logout')  
+@login_required
 def logout():
-    return render_template("logout.html") 
+    logout_user() # logout current user
+    return redirect(url_for('auth.login'))
     
 @auth.route('/login',methods=['GET', 'POST']) # will now handle post and get requests
 def login():
@@ -32,11 +34,13 @@ def login():
         if user:
             if check_password_hash(user.password, password):
                 flash('Logged in succesfully', category= 'succes')
+                login_user(user,remember=True) # remember the user for login
+                return redirect(url_for('auth.home'))
             else:
                 flash('Incorrect password, try again.', category= 'error')
         else:
             flash('Email does not exist',category='error')            
-    return render_template("login.html")
+    return render_template("login.html", user = current_user)
     
         
 @auth.route('/sign-up', methods=['GET', 'POST'])
@@ -67,9 +71,10 @@ def sign_up():
             new_user = User(email=email, first_name = firstName, password = generate_password_hash(password = password1 , method = 'sha256'))
             db.session.add(new_user)
             db.session.commit()
+            login_user(user,remember=True)
             flash("Account succesfully created", category = 'succes')
             return redirect(url_for('auth.home'))
             
-    return render_template("sign_up.html")
+    return render_template("sign_up.html" , user = current_user)
 
 
