@@ -4,6 +4,7 @@ from werkzeug.security import generate_password_hash,check_password_hash
 from . import db
 from flask_login import login_user, login_required, logout_user, current_user
 
+import sqlite3
 
 #routes for or website
 
@@ -23,6 +24,7 @@ def logout():
     
 @auth.route('/login',methods=['GET', 'POST']) # will now handle post and get requests
 def login():
+    
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
@@ -46,6 +48,7 @@ def login():
 @auth.route('/sign-up', methods=['GET', 'POST'])
 def sign_up():
     if request.method == 'POST':
+         
         email = request.form.get('email')
         firstName = request.form.get('firstName')
         password1 = request.form.get('password1')
@@ -76,5 +79,17 @@ def sign_up():
             return redirect(url_for('auth.home'))
             
     return render_template("sign_up.html" , user = current_user)
+
+@auth.route('/show',  methods = ['GET','POST'])
+@login_required
+def showData():
+
+    con = sqlite3.connect("database.db")
+    con.row_factory = sqlite3.Row
+    cur = con.cursor()
+    cur.execute("select * from Values_IOT")
+   
+    rows = cur.fetchall(); 
+    return render_template("show.html",rows = rows , user=current_user)
 
 

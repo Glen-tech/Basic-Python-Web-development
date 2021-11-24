@@ -1,15 +1,36 @@
 {% extends "base.html" %}
 
-{% block title %}Login{% endblock %}
+{% block title %}Show data in database{% endblock %}
 
 <!-- Flask debug needs to be on for refresh after changing code-->
 
 {% block content %}
 
-
-	
-	<button type= "submit" class="btn btn-primary"> It shows </button>
-
+ <table class = "table table-hover">
+         <thead class= "thead-light" style="text-align:center">
+            <th scope="col">Time</td>
+            <th scope="col">CO2</td>
+            <th scope="col">tVTOC</td>
+            <th scope="col">Humidity</td>
+            <th scope="col">Temperature</td>
+            <th scope="col">Light</td>
+         </thead>
+         
+         <tbody>
+         
+         {% for row in rows %}
+            <tr style="text-align:center">
+               <td>{{row["Time"]}}</td>	
+               <td>{{row["CO2"]}}</td>
+               <td>{{row["tVTOC"]}}</td>
+               <td>{{row["Humidity"]}}</td>
+               <td>{{row["Temperature"]}}</td>
+               <td>{{row["Light"]}}</td>	
+            </tr>
+         {% endfor %}
+         </tbody>
+</table>
+    
 
 
 {% endblock%}

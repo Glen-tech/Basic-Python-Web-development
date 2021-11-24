@@ -71,6 +71,12 @@ const char* password = "Fdarmbefcn48";
 //Your Domain name with URL path or IP address with path
 const char* serverName = "http://192.168.0.223:5000/handleData";
 
+unsigned long lastTime = 0;
+// Timer set to 10 minutes (600000)
+//unsigned long timerDelay = 600000;
+// Set timer to 5 seconds (5000)
+unsigned long timerDelay = 5000;
+
 
 void css811_sensor()
 {
@@ -185,6 +191,7 @@ void setup()
 
 void loop()
 {
+  if ((millis() - lastTime) > timerDelay) {
   
     if(WiFi.status() == WL_CONNECTED)
       {
@@ -228,7 +235,6 @@ void loop()
               }
       }
 
-  delay(1000);
-  
-  
+      lastTime = millis();
+  }
  }

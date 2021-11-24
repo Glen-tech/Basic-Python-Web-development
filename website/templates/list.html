@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+   <body>
+   
+      <table border = 1>
+         <thead>
+            <td>Time</td>
+            <td>CO2</td>
+            <td>tVTOC</td>
+            <td>Humidity</td>
+            <td>Temperature</td>
+            <td>Light</td>
+         </thead>
+         
+         {% for row in rows %}
+            <tr>
+               <td>{{row["Time"]}}</td>	
+               <td>{{row["CO2"]}}</td>
+               <td>{{row["tVTOC"]}}</td>
+               <td>{{row["Humidity"]}}</td>
+               <td>{{row["Temperature"]}}</td>
+               <td>{{row["Light"]}}</td>	
+            </tr>
+         {% endfor %}
+      </table>
+     CO2
+      <a href = "/">Go back to home page</a>
+      
+   </body>
+</html>
