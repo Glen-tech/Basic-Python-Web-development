@@ -1,36 +1,62 @@
 {% extends "base.html" %}
 
-{% block title %}Show data in database{% endblock %}
+{% block title %}Show data{% endblock %}
 
 <!-- Flask debug needs to be on for refresh after changing code-->
 
 {% block content %}
 
- <table class = "table table-hover">
-         <thead class= "thead-light" style="text-align:center">
+
+<div class= "container">
+    <div class="row">
+        <div class="btn-group-vertical text-left">
+            <button type="button" class="btn btn-primary" data-toggle="button">
+             Max value CO2
+            </button>
+          
+            <button type="button" class="btn btn-primary" data-toggle="button">
+             Min value CO2
+            </button>
+           
+            <button type="button" class="btn btn-primary" data-toggle="button">
+             Max value tVTOC
+            </button>
+               
+            <button type="button" class="btn btn-primary" data-toggle="button">
+            Min value tVTOC
+            </button>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="container">
+    <table class = "table table-hover">
+        <thead class= "thead-light" style="text-align:center">
             <th scope="col">Time</td>
             <th scope="col">CO2</td>
-            <th scope="col">tVTOC</td>
+            <th scope="col">TVOC</td>
             <th scope="col">Humidity</td>
             <th scope="col">Temperature</td>
             <th scope="col">Light</td>
-         </thead>
-         
-         <tbody>
-         
-         {% for row in rows %}
-            <tr style="text-align:center">
-               <td>{{row["Time"]}}</td>	
-               <td>{{row["CO2"]}}</td>
-               <td>{{row["tVTOC"]}}</td>
-               <td>{{row["Humidity"]}}</td>
-               <td>{{row["Temperature"]}}</td>
-               <td>{{row["Light"]}}</td>	
-            </tr>
-         {% endfor %}
-         </tbody>
-</table>
-    
+        </thead>
+        
+        <tbody>
+        {% for row in rows %}
+        <tr style="text-align:center">
+             <td>{{row["Time"]}}</td>	
+             <td>{{row["CO2"]}}</td>
+             <td>{{row["tVTOC"]}}</td>
+             <td>{{row["Humidity"]}}</td>
+             <td>{{row["Temperature"]}}</td>
+             <td>{{row["Light"]}}</td>	
+             </tr>
+        {% endfor %}
+        </tbody>
+        
+    </table>
+</div> 
 
 
 {% endblock%}

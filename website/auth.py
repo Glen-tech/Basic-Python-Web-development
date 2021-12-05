@@ -28,8 +28,8 @@ def login():
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
-        print(email)
-        print(password)
+        #print(email)
+        #print(password)
         
         user = User.query.filter_by(email=email).first()
         
@@ -53,10 +53,10 @@ def sign_up():
         firstName = request.form.get('firstName')
         password1 = request.form.get('password1')
         password2 = request.form.get('password2')
-        print(email)
-        print(firstName)
-        print(password1)
-        print(password2)
+       # print(email)
+       # print(firstName)
+       # print(password1)
+       # print(password2)
         
         user = User.query.filter_by(email=email).first()
         
@@ -80,16 +80,5 @@ def sign_up():
             
     return render_template("sign_up.html" , user = current_user)
 
-@auth.route('/show',  methods = ['GET','POST'])
-@login_required
-def showData():
-
-    con = sqlite3.connect("database.db")
-    con.row_factory = sqlite3.Row
-    cur = con.cursor()
-    cur.execute("select * from Values_IOT")
-   
-    rows = cur.fetchall(); 
-    return render_template("show.html",rows = rows , user=current_user)
 
 

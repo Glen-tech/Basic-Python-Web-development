@@ -72,7 +72,14 @@ def showData():
     cur.execute("SELECT * FROM Values_IOT ORDER BY Time DESC")
    
     rows = cur.fetchall(); 
+            
     return render_template("show.html",rows = rows , user=current_user)
+
+
+@IOT.route('/plot',  methods = ['GET','POST'])
+@login_required
+def plotData():
+    return render_template("plot.html",user=current_user)
 
 
 
